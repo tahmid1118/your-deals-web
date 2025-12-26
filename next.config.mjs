@@ -6,14 +6,33 @@ const nextConfig = {
       return [
           {
         source: "/",
-        destination: "/en/login",
+        destination: "/en/user-dashboard",
         permanent: true,
       },
       ];
     },
   
     images: {
-      domains: ["bdtmp.ultra-x.jp"],
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'bdtmp.ultra-x.jp',
+        },
+        {
+          protocol: 'http',
+          hostname: 'localhost',
+        },
+        {
+          protocol: 'http',
+          hostname: '192.168.0.102',
+        },
+        {
+          protocol: 'http',
+          hostname: '192.168.88.49',
+        },
+      ],
+      dangerouslyAllowSVG: true,
+      unoptimized: true,
     },
   };
   
