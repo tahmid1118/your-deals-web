@@ -1,6 +1,8 @@
 "use client";
-
+import { useTranslation } from "@/app/i18n/client";
 import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import * as CryptoJS from "crypto-js";
 import Image from "next/image";
 import { Heart, MapPin, Star, Search, Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -44,13 +46,19 @@ interface DealsResponse {
   };
 }
 
-export default function UserDashboard() {
+
+import CookiesProviderWrapper from "@/components/CookiesProviderWrapper";
+
+function UserDashboardComponent() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [pagination, setPagination] = useState<PaginationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
-
+  const router = useRouter();
+  const pathname = usePathname();
+  const lng = pathname.split("/")[1] as "en" | "jp"; // detect language from URL
+  const { t } = useTranslation(lng, "Language");
   const fetchDeals = async (page: number = 0) => {
     setLoading(true);
     try {
@@ -176,29 +184,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-red-500">
-              YourDeals
-            </h1>
-            <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-              <Button variant="ghost" className="hidden md:inline-flex text-sm">
-                My Favorites
-              </Button>
-              <Button variant="ghost" size="icon" title="Notifications" className="h-8 w-8 sm:h-9 sm:w-9">
-                <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" title="Profile" className="h-8 w-8 sm:h-9 sm:w-9">
-                <User className="h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
       {/* Search Bar */}
       <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8">
@@ -256,6 +242,11 @@ export default function UserDashboard() {
             <Card
               key={deal.deal_id}
               className="group cursor-pointer border-none shadow-none hover:shadow-lg transition-shadow"
+              onClick={() => {
+                const secretKey = process.env.SECRET_KEY || "default_secret_key";
+                const encodedId = CryptoJS.AES.encrypt(deal.deal_id.toString(), secretKey).toString();
+                router.push(`/${lng}/deal-details?id=${encodeURIComponent(encodedId)}`);
+              }}
             >
               <CardContent className="p-0">
                 {/* Image Container */}
@@ -411,5 +402,13 @@ export default function UserDashboard() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function UserDashboard(props) {
+  return (
+    <CookiesProviderWrapper>
+      <UserDashboardComponent {...props} />
+    </CookiesProviderWrapper>
   );
 }

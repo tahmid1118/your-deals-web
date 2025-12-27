@@ -6,8 +6,8 @@ import resourcesToBackend from "i18next-resources-to-backend"
 import { useEffect, useState } from "react"
 import { useCookies } from "react-cookie"
 import {
-  initReactI18next,
-  useTranslation as useTranslationOrg,
+    initReactI18next,
+    useTranslation as useTranslationOrg,
 } from "react-i18next"
 
 import { cookieName, getOptions, languages } from "./settings"
