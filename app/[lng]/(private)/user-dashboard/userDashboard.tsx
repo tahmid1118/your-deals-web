@@ -19,6 +19,7 @@ interface Deal {
   deal_type: string;
   deal_start_datetime: string;
   deal_end_datetime: string;
+  rating: number | null;
   created_at: string;
   updated_at: string | null;
   branch_id: number;
@@ -47,7 +48,6 @@ export default function UserDashboard() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [pagination, setPagination] = useState<PaginationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
@@ -95,16 +95,41 @@ export default function UserDashboard() {
     fetchDeals(currentPage);
   }, [currentPage]);
 
-  const toggleFavorite = (dealId: number) => {
-    setFavorites((prev) => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(dealId)) {
-        newFavorites.delete(dealId);
-      } else {
-        newFavorites.add(dealId);
-      }
-      return newFavorites;
+  const handleRating = async (dealId: number) => {
+    // Find the current deal and its rating from the latest state
+    const deal = deals.find((d) => d.deal_id === dealId);
+    // Always treat rating as integer for calculation
+    const currentRating = deal?.rating ? Math.floor(Number(deal.rating)) : 0;
+    const newRating = currentRating + 1;
+
+    // Update UI immediately
+    setDeals((prevDeals) => {
+      const updatedDeals = prevDeals.map((d) =>
+        d.deal_id === dealId ? { ...d, rating: newRating } : d
+      );
+      // Sort by rating (highest first), null ratings go to the end
+      return updatedDeals.sort((a, b) => {
+        const ratingA = a.rating ?? -1;
+        const ratingB = b.rating ?? -1;
+        return ratingB - ratingA;
+      });
     });
+
+    // Send API call in background
+    try {
+      const formData = new FormData();
+      formData.append("dealId", dealId.toString());
+      formData.append("rating", newRating.toString());
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/deal/update`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+    } catch (error) {
+      console.error("Error updating rating:", error);
+    }
   };
 
   const handleImageError = (dealId: number) => {
@@ -252,21 +277,35 @@ export default function UserDashboard() {
                       onError={() => handleImageError(deal.deal_id)}
                     />
                   )}
-                  {/* Favorite Button */}
+                  {/* Rating Button */}
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      toggleFavorite(deal.deal_id);
+                      handleRating(deal.deal_id);
+                      // Animation: add a class for a short pulse
+                      const btn = e.currentTarget;
+                      btn.classList.remove('animate-ping-heart');
+                      void btn.offsetWidth; // trigger reflow
+                      btn.classList.add('animate-ping-heart');
                     }}
-                    className="absolute top-2 right-2 p-1.5 sm:p-2 rounded-full bg-white/90 hover:bg-white transition-colors"
+                    className={
+                      `absolute top-2 right-2 p-1.5 sm:p-2 rounded-full bg-white/90 transition-colors hover:bg-white cursor-pointer`
+                    }
+                    type="button"
                   >
                     <Heart
-                      className={`h-3 w-3 sm:h-4 sm:w-4 ${
-                        favorites.has(deal.deal_id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-700"
-                      }`}
+                      className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700 transition-transform"
                     />
+                    <style jsx>{`
+                      .animate-ping-heart {
+                        animation: ping-heart 0.4s cubic-bezier(0.4, 0, 0.6, 1);
+                      }
+                      @keyframes ping-heart {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.4); }
+                        100% { transform: scale(1); }
+                      }
+                    `}</style>
                   </button>
                   {/* Guest Favorite Badge */}
                   {/* <div className="absolute top-3 left-3">
@@ -293,9 +332,9 @@ export default function UserDashboard() {
                       {deal.shop_name}
                     </h3>
                     <div className="flex items-center gap-0.5 sm:gap-1 text-xs shrink-0">
-                      <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-current" />
+                      <Heart className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-red-500 text-red-500" />
                       <span className="font-semibold text-xs">
-                        {(4 + Math.random()).toFixed(2)}
+                        {deal.rating ? Math.floor(Number(deal.rating)) : 0}
                       </span>
                     </div>
                   </div>
@@ -352,9 +391,7 @@ export default function UserDashboard() {
                     variant={currentPage === pageIndex ? "default" : "outline"}
                     onClick={() => setCurrentPage(pageIndex)}
                     className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
-                      currentPage === pageIndex
-                        ? "bg-red-500 hover:bg-red-600"
-                        : ""
+                      currentPage === pageIndex ? "bg-red-500 hover:bg-red-600" : ""
                     }`}
                   >
                     {pageIndex + 1}
@@ -365,11 +402,7 @@ export default function UserDashboard() {
             <Button
               variant="outline"
               disabled={currentPage === pagination.totalPages - 1}
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(pagination.totalPages - 1, prev + 1)
-                )
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages - 1, prev + 1))}
               className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9"
             >
               Next
