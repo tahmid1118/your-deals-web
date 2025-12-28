@@ -152,7 +152,7 @@ export default function DealDetailsComponent() {
           <div className="w-full flex flex-col gap-4">
             <div className="w-full rounded-2xl overflow-hidden bg-gray-100 shadow-md flex items-center justify-center p-2">
               <Image
-                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${deal.deal_thumbnail}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/deal-thumbnails/${deal.deal_thumbnail}`}
                 alt={deal.deal_title}
                 width={600}
                 height={600}
@@ -231,7 +231,7 @@ export default function DealDetailsComponent() {
                 >
                   <div className="relative aspect-[4/3] w-full bg-gray-100">
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${d.deal_thumbnail}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/deal-thumbnails/${d.deal_thumbnail}`}
                       alt={d.deal_title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"

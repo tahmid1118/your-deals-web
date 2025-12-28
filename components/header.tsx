@@ -41,20 +41,6 @@ export default function Header() {
               {session?.user?.name && (
                 <span className="text-base font-medium text-gray-700 mr-2">Hello, {session.user.name}!</span>
               )}
-              {/* Deal Management button for logged in users */}
-              {session && (
-                <Button
-                  variant="outline"
-                  className="mr-2 hidden sm:inline-flex"
-                  onClick={() => {
-                    // Try to detect language from path, fallback to 'en'
-                    const lng = pathname.split("/")[1] || "en";
-                    router.push(`/${lng}/deal-management`);
-                  }}
-                >
-                  Add an item Deal Management
-                </Button>
-              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
@@ -65,7 +51,18 @@ export default function Header() {
                   {!session ? (
                     <DropdownMenuItem onClick={handleLogin}>Login</DropdownMenuItem>
                   ) : (
-                    <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => {
+                          const lng = pathname.split("/")[1] || "en";
+                          router.push(`/${lng}/deal-management`);
+                        }}
+                        className="hover:bg-red-50"
+                      >
+                        Deal Management
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+                    </>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

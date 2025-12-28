@@ -260,7 +260,7 @@ function UserDashboardComponent() {
                     </div>
                   ) : (
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/${deal.deal_thumbnail}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/deal-thumbnails/${deal.deal_thumbnail}`}
                       alt={deal.deal_title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"

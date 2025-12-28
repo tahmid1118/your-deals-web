@@ -1,6 +1,9 @@
 import DealManager from "./dealManager";
+import { auth } from "@/auth";
 
+export default async function Page() {
+  const session = await auth();
+  const accessToken = session?.user?.access_token || "";
 
-export default function Page() {
-	return <DealManager />;
+  return <DealManager accessToken={accessToken} />;
 }
