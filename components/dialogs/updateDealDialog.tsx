@@ -81,7 +81,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
   const [loading, setLoading] = useState(false);
 
   const pathname = usePathname();
-  const lng = pathname.split("/")[1] as "en" | "jp";
+  const lng = pathname.split("/")[1] as "en" | "bn";
   const { t } = useTranslation(lng, "Language");
 
   const form = useForm<DealFormInputs>({
@@ -179,15 +179,15 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start hover:bg-red-50">
           <Pencil className="w-4 h-4 mr-2" />
-          Update Deal
+          {t("updateDeal")}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-[80vh] overflow-y-auto border-none shadow-none bg-red-50">
         <DialogHeader>
-          <DialogTitle>Update Deal</DialogTitle>
+          <DialogTitle>{t("updateDeal")}</DialogTitle>
           <DialogDescription>
-            Modify deal details below
+            {t("modifyDealDetailsBelow")}
           </DialogDescription>
         </DialogHeader>
 
@@ -199,10 +199,10 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealTitle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Title</FormLabel>
+                  <FormLabel className="font-bold">{t("dealTitle")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter deal title"
+                      placeholder={t("enterDealTitle")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -218,10 +218,10 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealDetails"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Details</FormLabel>
+                  <FormLabel className="font-bold">{t("dealDetails")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter deal details"
+                      placeholder={t("enterDealDetails")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -237,7 +237,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealThumbnail"
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Thumbnail</FormLabel>
+                  <FormLabel className="font-bold">{t("dealThumbnail")}</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -402,7 +402,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               disabled={loading}
               className="w-full bg-red-500 text-white hover:bg-red-600"
             >
-              {loading ? "Updating..." : "Update Deal"}
+              {loading ? t("updating") : t("updateDeal")}
             </Button>
           </form>
         </Form>

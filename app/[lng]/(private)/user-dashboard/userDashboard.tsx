@@ -57,7 +57,7 @@ function UserDashboardComponent() {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const router = useRouter();
   const pathname = usePathname();
-  const lng = pathname.split("/")[1] as "en" | "jp"; // detect language from URL
+  const lng = pathname.split("/")[1] as "en" | "bn"; // detect language from URL
   const { t } = useTranslation(lng, "Language");
   const fetchDeals = async (page: number = 0) => {
     setLoading(true);

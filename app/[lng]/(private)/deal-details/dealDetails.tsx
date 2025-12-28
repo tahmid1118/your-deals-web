@@ -46,7 +46,7 @@ export default function DealDetailsComponent() {
   const [topDealsError, setTopDealsError] = useState("");
   const pathname = usePathname();
   const router = useRouter();
-  const lng = pathname.split("/")[1] as "en" | "jp"; // detect language from URL
+  const lng = pathname.split("/")[1] as "en" | "bn"; // detect language from URL
   const { t } = useTranslation(lng, "Language");
   useEffect(() => {
     const encodedId = searchParams.get("id");

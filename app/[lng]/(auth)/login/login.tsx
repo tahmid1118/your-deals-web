@@ -10,55 +10,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import bg3 from "@/public/bg3.png";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { toast } from "sonner";
 import { z } from "zod";
-import { create } from "zustand";
-
-// Dummy translation function (replace with your i18n solution)
-  // Replace translation function with direct English text
-  const t = (key: string) => {
-    switch (key) {
-      case "welcome_back":
-        return "Welcome back!";
-      case "login_subtitle":
-        return "Sign in to your account to continue.";
-      case "email":
-        return "Email";
-      case "placeholders.enter_email":
-        return "Enter your email address";
-      case "password":
-        return "Password";
-      case "placeholders.password_hint":
-        return "Enter your password";
-      case "forgot_password":
-        return "Forgot your password?";
-      case "no_account":
-        return "Don't have an account?";
-      case "signup_here":
-        return "Sign up here";
-      case "logging_in":
-        return "Logging in...";
-      case "login":
-        return "Login";
-      default:
-        return key;
-    }
-  };
-
-// Dummy lng (replace with your routing/i18n solution)
-const lng = "en";
+import { useTranslation } from "@/app/i18n/client";
 
 // Zod schema for form validation
 const schema = z.object({
@@ -79,7 +42,8 @@ export default function LoginPage() {
   });
 
   // Extract language from pathname, fallback to 'en'
-  const detectedLng = pathname?.split("/")[1] || lng;
+  const detectedLng = pathname?.split("/")[1] || "en";
+  const { t } = useTranslation(detectedLng as "en" | "bn", "Language");
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
@@ -91,13 +55,19 @@ export default function LoginPage() {
         lg: detectedLng,
       });
       if (result?.error) {
-        toast.error(result.error);
+        toast.error(result.error, {
+          style: { background: "#D32F2F", color: "#fff" },
+        });
       } else {
-        toast.success("Logged in!");
+        toast.success("Logged in!", {
+          style: { background: "#2E7D32", color: "#fff" },
+        });
         router.push(`/${detectedLng}/user-dashboard`);
       }
     } catch (error) {
-      toast.error("Login failed");
+      toast.error("Login failed", {
+        style: { background: "#D32F2F", color: "#fff" },
+      });
     } finally {
       setIsLoading(false);
     }

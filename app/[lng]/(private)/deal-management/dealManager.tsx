@@ -7,7 +7,6 @@ import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -15,6 +14,8 @@ import {
 import UpdateDealDialog from "@/components/dialogs/updateDealDialog";
 import DeleteDealDialog from "@/components/dialogs/deleteDealDialog";
 import CreateDealDialog from "@/components/dialogs/createDealDialog";
+import { usePathname } from "next/navigation";
+import { useTranslation } from "@/app/i18n/client";
 
 
 
@@ -41,6 +42,9 @@ interface Deal {
 
 export default function DealManager({ accessToken }: { accessToken: string }) {
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const lng = pathname.split("/")[1] as "en" | "bn";
+  const { t } = useTranslation(lng, "Language");
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -60,7 +64,7 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
         body: JSON.stringify({
           lg: "en",
           paginationData: {
-            itemsPerPage: 10,
+            itemsPerPage: 12,
             currentPageNumber: currentPage,
             sortOrder: "asc",
             filterBy: "",
@@ -84,37 +88,37 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
   const columns = [
     {
       accessorKey: "deal_id",
-      header: "ID",
+      header: t("id"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "deal_title",
-      header: "Title",
+      header: t("dealTitle"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "deal_details",
-      header: "Details",
+      header: t("dealDetails"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "deal_channel",
-      header: "Channel",
+      header: t("dealChannel"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "deal_type",
-      header: "Type",
+      header: t("dealType"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "deal_start_datetime",
-      header: "Start",
+      header: t("startDate"),
       cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
     },
     {
       accessorKey: "deal_end_datetime",
-      header: "End",
+      header: t("endDate"),
       cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
     },
     {
@@ -140,8 +144,8 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
                 <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-fit">
+              <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <UpdateDealDialog dealDetails={tableData} fetchDeals={fetchDeals} accessToken={accessToken} />
               <DeleteDealDialog dealId={tableData.deal_id} dealTitle={tableData.deal_title} fetchDeals={fetchDeals} accessToken={accessToken} />
@@ -153,55 +157,57 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white p-6">
-      <h1 className="text-2xl font-bold mb-4">Deal Management</h1>
-      <DataTable 
-        data={deals} 
-        columns={columns} 
-        searchableKey="deal_title"
-        toolbarContent={<CreateDealDialog fetchDeals={fetchDeals} accessToken={accessToken} />}
-      />
-      {loading && <div className="mt-4">Loading...</div>}
+    <div className="h-screen overflow-y-auto bg-gradient-to-br from-red-50 to-white">
+      <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+        <h1 className="text-2xl font-bold mb-4">{t("dealManagement")}</h1>
+        <DataTable 
+          data={deals} 
+          columns={columns} 
+          searchableKey="deal_title"
+          toolbarContent={<CreateDealDialog fetchDeals={fetchDeals} accessToken={accessToken} />}
+        />
+        {loading && <div className="mt-2">{t("loading")}</div>}
       
-      {/* Pagination */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1 sm:gap-2 mt-6 sm:mt-8 md:mt-12 flex-wrap px-2">
-          <Button
-            variant="outline"
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-            className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9 bg-red-100 hover:bg-red-200"
-          >
-            Previous
-          </Button>
-          <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
-            {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
-              const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
-              if (pageIndex >= pagination.totalPages) return null;
-              return (
-                <Button
-                  key={pageIndex}
-                  variant={currentPage === pageIndex ? "default" : "outline"}
-                  onClick={() => setCurrentPage(pageIndex)}
-                  className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
-                    currentPage === pageIndex ? "bg-red-500 hover:bg-red-600" : "bg-red-100 hover:bg-red-200"
-                  }`}
-                >
-                  {pageIndex + 1}
-                </Button>
-              );
-            })}
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-center gap-1 sm:gap-2 mt-6 flex-wrap px-2 flex-shrink-0">
+            <Button
+              variant="outline"
+              disabled={currentPage === 0}
+              onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
+              className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9 bg-red-100 hover:bg-red-200"
+            >
+              {t("previous")}
+            </Button>
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+              {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
+                const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
+                if (pageIndex >= pagination.totalPages) return null;
+                return (
+                  <Button
+                    key={pageIndex}
+                    variant={currentPage === pageIndex ? "default" : "outline"}
+                    onClick={() => setCurrentPage(pageIndex)}
+                    className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
+                      currentPage === pageIndex ? "bg-red-500 hover:bg-red-600" : "bg-red-100 hover:bg-red-200"
+                    }`}
+                  >
+                    {pageIndex + 1}
+                  </Button>
+                );
+              })}
+            </div>
+            <Button
+              variant="outline"
+              disabled={currentPage === pagination.totalPages - 1}
+              onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages - 1, prev + 1))}
+              className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9 bg-red-100 hover:bg-red-200"
+            >
+              {t("next")}
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            disabled={currentPage === pagination.totalPages - 1}
-            onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages - 1, prev + 1))}
-            className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9 bg-red-100 hover:bg-red-200"
-          >
-            Next
-          </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

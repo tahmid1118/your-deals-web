@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "@/app/i18n/client";
 
 // Zod schema for form validation
 const dealSchema = z.object({
@@ -64,7 +65,8 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
   const [loading, setLoading] = useState(false);
 
   const pathname = usePathname();
-  const lng = pathname.split("/")[1] as "en" | "jp";
+  const lng = pathname.split("/")[1] as "en" | "bn";
+  const { t } = useTranslation(lng, "Language");
 
   const form = useForm<DealFormInputs>({
     resolver: zodResolver(dealSchema),
@@ -142,15 +144,15 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
       <DialogTrigger asChild>
         <Button className="bg-red-500 hover:bg-red-600 text-white">
           <Plus className="w-4 h-4 mr-2" />
-          Create Deal
+          {t("createDeal")}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-[80vh] overflow-y-auto border-none shadow-none bg-red-50">
         <DialogHeader>
-          <DialogTitle>Create New Deal</DialogTitle>
+          <DialogTitle>{t("createNewDeal")}</DialogTitle>
           <DialogDescription>
-            Fill in the details to create a new deal
+            {t("fillInTheDetailsToCreateANewDeal")}
           </DialogDescription>
         </DialogHeader>
 
@@ -365,7 +367,7 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               disabled={loading}
               className="w-full bg-red-500 text-white hover:bg-red-600"
             >
-              {loading ? "Creating..." : "Create Deal"}
+              {loading ? t("creating") : t("createDeal")}
             </Button>
           </form>
         </Form>

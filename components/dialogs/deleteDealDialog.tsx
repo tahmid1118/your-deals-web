@@ -29,7 +29,7 @@ const DeleteDealDialog: React.FC<DeleteDealDialogProps> = ({
   accessToken,
 }) => {
   const pathname = usePathname();
-  const lng = pathname.split("/")[1] as "en" | "jp";
+  const lng = pathname.split("/")[1] as "en" | "bn";
   const { t } = useTranslation(lng, "Language");
 
   const [loading, setLoading] = useState(false);
@@ -88,25 +88,25 @@ const DeleteDealDialog: React.FC<DeleteDealDialogProps> = ({
       <DialogTrigger asChild>
         <Button variant="ghost" className="w-full justify-start text-red-600 hover:bg-red-50">
           <Trash2 className="w-4 h-4 mr-2" />
-          Delete Deal
+          {t("deleteDeal")}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px] bg-red-50">
         <DialogHeader>
-          <DialogTitle>Delete Deal</DialogTitle>
+          <DialogTitle>{t("deleteDeal")}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone.
+            {t("thisActionCannotBeUndone")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">
           <p className="text-sm text-gray-700">
-            Are you sure you want to delete{" "}
+            {t("areYouSureYouWantToDelete")}{" "}
             <span className="font-semibold">{dealTitle}</span>?
           </p>
           <p className="text-sm text-red-600 mt-2">
-            All associated data will be permanently deleted.
+            {t("allAssociatedDataWillBePermanentlyDeleted")}
           </p>
         </div>
 
@@ -118,7 +118,7 @@ const DeleteDealDialog: React.FC<DeleteDealDialogProps> = ({
             disabled={loading}
             className="bg-white"
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             variant="destructive"
@@ -130,12 +130,12 @@ const DeleteDealDialog: React.FC<DeleteDealDialogProps> = ({
             {loading ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
-                Deleting...
+                {t("deleting")}
               </>
             ) : (
               <>
                 <Trash2 className="size-4" />
-                Delete Deal
+                {t("deleteDeal")}
               </>
             )}
           </Button>
