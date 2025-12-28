@@ -83,7 +83,7 @@ export function DataTable<T>({
 
       <div className="table-container max-h-[calc(100vh-250px)] overflow-y-auto rounded-md border border-[#e0e0e0] shadow-md custom-scrollbar">
         <Table className="relative max-h-[80%]">
-          <TableHeader className="sticky top-0 whitespace-nowrap bg-[#0a70ed]">
+          <TableHeader className="sticky top-0 whitespace-nowrap bg-[#ff4d5d]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
@@ -107,12 +107,12 @@ export function DataTable<T>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="group bg-gradient-to-r from-blue-50 to-white border-b border-[#e0e0e0]"
+                  className="group bg-gradient-to-r from-red-50 to-white border-b border-[#e0e0e0]"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="group-hover:bg-blue-100 transition-colors duration-200"
+                      className="group-hover:bg-red-100 transition-colors duration-200"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

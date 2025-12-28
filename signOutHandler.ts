@@ -8,6 +8,6 @@ interface HandleSignOutProps {
 
 export async function handleSignOut({ lng }: HandleSignOutProps) {
   await signOut({
-    redirectTo: `/uxpmt/${lng}/login`,
+    redirectTo: `/${lng}/login`,
   });
 }

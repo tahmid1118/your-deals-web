@@ -7,7 +7,7 @@ export async function authenticate(
   prevState: string | undefined,
   formData: FormData
 ) {
-  formData.append("redirectTo", "/en/dashboard")
+  formData.append("redirectTo", "/en/user-dashboard")
   try {
     const data = await signIn("credentials", formData)
   } catch (error) {
