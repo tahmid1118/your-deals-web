@@ -1,13 +1,12 @@
 "use client";
 import { useTranslation } from "@/app/i18n/client";
-import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import * as CryptoJS from "crypto-js";
-import Image from "next/image";
-import { Heart, MapPin, Star, Search, Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import * as CryptoJS from "crypto-js";
+import { Heart, MapPin, Search } from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface Deal {
   deal_id: number;
@@ -45,7 +44,6 @@ interface DealsResponse {
     pagination: PaginationData;
   };
 }
-
 
 import CookiesProviderWrapper from "@/components/CookiesProviderWrapper";
 
@@ -128,13 +126,10 @@ function UserDashboardComponent() {
       const formData = new FormData();
       formData.append("dealId", dealId.toString());
       formData.append("rating", newRating.toString());
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/deal/update`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deal/update`, {
+        method: "POST",
+        body: formData,
+      });
     } catch (error) {
       console.error("Error updating rating:", error);
     }
@@ -178,7 +173,7 @@ function UserDashboardComponent() {
   if (loading && deals.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading deals...</div>
+        <div className="text-xl">{t("loadingDeals")}</div>
       </div>
     );
   }
@@ -191,28 +186,34 @@ function UserDashboardComponent() {
           <div className="flex items-center justify-center max-w-4xl mx-auto">
             <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 border rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-6 py-2 sm:py-3 shadow-md hover:shadow-lg transition-shadow">
               <div className="flex-1 min-w-0">
-                <label className="text-xs font-semibold block mb-0.5">Where</label>
+                <label className="text-xs font-semibold block mb-0.5">
+                  {t("where")}
+                </label>
                 <input
                   type="text"
-                  placeholder="Search destinations"
+                  placeholder={t("searchDestinations")}
                   className="w-full border-none outline-none text-xs sm:text-sm bg-transparent"
                 />
               </div>
               <div className="hidden sm:block border-l h-12"></div>
               <div className="flex-1 min-w-0 sm:pl-4">
-                <label className="text-xs font-semibold block mb-0.5">When</label>
+                <label className="text-xs font-semibold block mb-0.5">
+                  {t("when")}
+                </label>
                 <input
                   type="text"
-                  placeholder="Add dates"
+                  placeholder={t("addDates")}
                   className="w-full border-none outline-none text-xs sm:text-sm bg-transparent"
                 />
               </div>
               <div className="hidden sm:block border-l h-12"></div>
               <div className="flex-1 min-w-0 sm:pl-4">
-                <label className="text-xs font-semibold block mb-0.5">Category</label>
+                <label className="text-xs font-semibold block mb-0.5">
+                  {t("category")}
+                </label>
                 <input
                   type="text"
-                  placeholder="All deals"
+                  placeholder={t("allDeals")}
                   className="w-full border-none outline-none text-xs sm:text-sm bg-transparent"
                 />
               </div>
@@ -232,7 +233,7 @@ function UserDashboardComponent() {
         {/* Section Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold">
-            Popular Deals in Your Area →
+            {t("popularDealsInYourArea")}
           </h2>
         </div>
 
@@ -243,9 +244,15 @@ function UserDashboardComponent() {
               key={deal.deal_id}
               className="group cursor-pointer border-none shadow-none hover:shadow-lg transition-shadow"
               onClick={() => {
-                const secretKey = process.env.SECRET_KEY || "default_secret_key";
-                const encodedId = CryptoJS.AES.encrypt(deal.deal_id.toString(), secretKey).toString();
-                router.push(`/${lng}/deal-details?id=${encodeURIComponent(encodedId)}`);
+                const secretKey =
+                  process.env.SECRET_KEY || "default_secret_key";
+                const encodedId = CryptoJS.AES.encrypt(
+                  deal.deal_id.toString(),
+                  secretKey
+                ).toString();
+                router.push(
+                  `/${lng}/deal-details?id=${encodeURIComponent(encodedId)}`
+                );
               }}
             >
               <CardContent className="p-0">
@@ -275,26 +282,28 @@ function UserDashboardComponent() {
                       handleRating(deal.deal_id);
                       // Animation: add a class for a short pulse
                       const btn = e.currentTarget;
-                      btn.classList.remove('animate-ping-heart');
+                      btn.classList.remove("animate-ping-heart");
                       void btn.offsetWidth; // trigger reflow
-                      btn.classList.add('animate-ping-heart');
+                      btn.classList.add("animate-ping-heart");
                     }}
-                    className={
-                      `absolute top-2 right-2 p-1.5 sm:p-2 rounded-full bg-white/90 transition-colors hover:bg-white cursor-pointer`
-                    }
+                    className={`absolute top-2 right-2 p-1.5 sm:p-2 rounded-full bg-white/90 transition-colors hover:bg-white cursor-pointer`}
                     type="button"
                   >
-                    <Heart
-                      className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700 transition-transform"
-                    />
+                    <Heart className="h-3 w-3 sm:h-4 sm:w-4 text-gray-700 transition-transform" />
                     <style jsx>{`
                       .animate-ping-heart {
                         animation: ping-heart 0.4s cubic-bezier(0.4, 0, 0.6, 1);
                       }
                       @keyframes ping-heart {
-                        0% { transform: scale(1); }
-                        50% { transform: scale(1.4); }
-                        100% { transform: scale(1); }
+                        0% {
+                          transform: scale(1);
+                        }
+                        50% {
+                          transform: scale(1.4);
+                        }
+                        100% {
+                          transform: scale(1);
+                        }
                       }
                     `}</style>
                   </button>
@@ -332,7 +341,9 @@ function UserDashboardComponent() {
 
                   <div className="flex items-center gap-0.5 sm:gap-1 text-xs text-gray-600">
                     <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
-                    <span className="line-clamp-1 text-xs">{deal.branch_name}</span>
+                    <span className="line-clamp-1 text-xs">
+                      {deal.branch_name}
+                    </span>
                   </div>
 
                   <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
@@ -340,7 +351,9 @@ function UserDashboardComponent() {
                   </p>
 
                   <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span className="text-xs">{getChannelBadge(deal.deal_channel)}</span>
+                    <span className="text-xs">
+                      {getChannelBadge(deal.deal_channel)}
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -370,33 +383,44 @@ function UserDashboardComponent() {
               onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
               className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9"
             >
-              Previous
+              {t("previous")}
             </Button>
             <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
-              {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
-                const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
-                if (pageIndex >= pagination.totalPages) return null;
-                return (
-                  <Button
-                    key={pageIndex}
-                    variant={currentPage === pageIndex ? "default" : "outline"}
-                    onClick={() => setCurrentPage(pageIndex)}
-                    className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
-                      currentPage === pageIndex ? "bg-red-500 hover:bg-red-600" : ""
-                    }`}
-                  >
-                    {pageIndex + 1}
-                  </Button>
-                );
-              })}
+              {Array.from(
+                { length: Math.min(pagination.totalPages, 5) },
+                (_, i) => {
+                  const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
+                  if (pageIndex >= pagination.totalPages) return null;
+                  return (
+                    <Button
+                      key={pageIndex}
+                      variant={
+                        currentPage === pageIndex ? "default" : "outline"
+                      }
+                      onClick={() => setCurrentPage(pageIndex)}
+                      className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
+                        currentPage === pageIndex
+                          ? "bg-red-500 hover:bg-red-600"
+                          : ""
+                      }`}
+                    >
+                      {pageIndex + 1}
+                    </Button>
+                  );
+                }
+              )}
             </div>
             <Button
               variant="outline"
               disabled={currentPage === pagination.totalPages - 1}
-              onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages - 1, prev + 1))}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(pagination.totalPages - 1, prev + 1)
+                )
+              }
               className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9"
             >
-              Next
+              {t("next")}
             </Button>
           </div>
         )}

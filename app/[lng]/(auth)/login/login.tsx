@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,37 +14,43 @@ import { Input } from "@/components/ui/input";
 import bg3 from "@/public/bg3.png";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useTranslation } from "@/app/i18n/client";
 
-// Zod schema for form validation
-const schema = z.object({
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = {
+  email: string;
+  password: string;
+};
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
-  });
 
   // Extract language from pathname, fallback to 'en'
   const detectedLng = pathname?.split("/")[1] || "en";
   const { t } = useTranslation(detectedLng as "en" | "bn", "Language");
+
+  // Zod schema for form validation with translated messages
+  const schema = z.object({
+    email: z
+      .string()
+      .min(1, { message: t("errors.email_required") })
+      .email({ message: t("errors.email_invalid") }),
+    password: z.string().min(6, { message: t("errors.password_min_6") }),
+  });
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "", password: "" },
+  });
 
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);

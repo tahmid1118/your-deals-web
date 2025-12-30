@@ -1,13 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Heart, Share2, User } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { create } from "zustand";
 
 type LanguageState = {
@@ -46,25 +49,32 @@ export default function Header() {
   };
 
   const handleLogin = () => {
-    router.push("/en/login");
+    router.push(`/${lng}/login`);
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/en/login" });
+    await signOut({ callbackUrl: `/${lng}/login` });
   };
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 border-b shadow-sm backdrop-blur-md">
       <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+        c
         <div className="flex items-center justify-between">
-          <Link href="/en/user-dashboard" className="focus:outline-none">
-            <span className="text-lg sm:text-xl md:text-2xl font-bold text-red-500 tracking-tight cursor-pointer">YourDeals</span>
+          <Link href={`/${lng}/user-dashboard`} className="focus:outline-none">
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-red-500 tracking-tight cursor-pointer">
+              YourDeals
+            </span>
           </Link>
           {/* DealDetails header actions */}
           {pathname.includes("deal-details") ? (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" title="Share"><Share2 className="h-5 w-5" /></Button>
-              <Button variant="ghost" size="icon" title="Save"><Heart className="h-5 w-5" /></Button>
+              <Button variant="ghost" size="icon" title="Share">
+                <Share2 className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" title="Save">
+                <Heart className="h-5 w-5" />
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
@@ -73,7 +83,9 @@ export default function Header() {
                 <button
                   onClick={() => handleLanguageChange("en")}
                   className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
-                    language === "en" ? "bg-red-500 text-white" : "text-gray-700 hover:bg-red-100"
+                    language === "en"
+                      ? "bg-red-500 text-white"
+                      : "text-gray-700 hover:bg-red-100"
                   }`}
                 >
                   EN
@@ -81,7 +93,9 @@ export default function Header() {
                 <button
                   onClick={() => handleLanguageChange("bn")}
                   className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
-                    language === "bn" ? "bg-red-500 text-white" : "text-gray-700 hover:bg-red-100"
+                    language === "bn"
+                      ? "bg-red-500 text-white"
+                      : "text-gray-700 hover:bg-red-100"
                   }`}
                 >
                   BN
@@ -90,13 +104,19 @@ export default function Header() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 sm:h-9 sm:w-9"
+                  >
                     <User className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {!session ? (
-                    <DropdownMenuItem onClick={handleLogin}>Login</DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleLogin}>
+                      Login
+                    </DropdownMenuItem>
                   ) : (
                     <>
                       <div className="px-2 py-2 text-sm font-semibold text-gray-700 border-b">
@@ -111,7 +131,12 @@ export default function Header() {
                       >
                         Deal Management
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={handleLogout} className="hover:bg-red-50">Logout</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={handleLogout}
+                        className="hover:bg-red-50"
+                      >
+                        Logout
+                      </DropdownMenuItem>
                     </>
                   )}
                 </DropdownMenuContent>

@@ -191,9 +191,10 @@
     "name": "Name must be at least 2 characters.",
     "address": "Address must be at least 2 characters.",
     "phone": "Invalid phone number",
-    "email_required": "Email is required",
-    "email_invalid": "Invalid email address",
-    "password": "Password must be at least 8 characters",
+    "email_required": "ইমেইল আবশ্যক",
+    "email_invalid": "অবৈধ ইমেইল ঠিকানা",
+    "password": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে",
+    "password_min_6": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে",
     "old_password": "Old password must be at least 8 characters.",
     "new_password": "New password must be at least 8 characters.",
     "confirm_password": "Confirm password must be at least 8 characters.",
@@ -202,12 +203,12 @@
     "otp_required": "Your one-time password must be 6 characters."
   },
   "placeholders": {
-    "enter_name": "Enter Name",
-    "enter_email": "Enter Email",
-    "enter_address": "Enter Address",
-    "enter_phone": "Enter Phone",
-    "password_hint": "8+ characters",
-    "filter_emails": "Filter emails"
+    "enter_name": "নাম লিখুন",
+    "enter_email": "ইমেইল লিখুন",
+    "enter_address": "ঠিকানা লিখুন",
+    "enter_phone": "ফোন নম্বর লিখুন",
+    "password_hint": "৬+ অক্ষর",
+    "filter_emails": "ইমেইল ফিল্টার করুন"
   },
   "form": {
     "update_password": "Update Password",
