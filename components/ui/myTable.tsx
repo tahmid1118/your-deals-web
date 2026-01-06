@@ -71,7 +71,13 @@ export function DataTable<T>({
         <div className="flex flex-col md:flex-row justify-between gap-3 items-start md:items-center mb-4">
           {searchableKey && (
             <Input
-              placeholder={`Search by ${String(searchableKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}`}
+              placeholder={
+                t("searchBy") +
+                " " +
+                String(searchableKey)
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())
+              }
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full md:w-64 px-5 py-3 rounded-full shadow-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-red-50 transition"

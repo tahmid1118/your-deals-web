@@ -1,4 +1,5 @@
 "use client";
+import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ export default function Header() {
   const { data: session } = useSession();
   const { language, setLanguage } = useLanguageStore();
   const lng = pathname.split("/")[1] as "en" | "bn";
+  const { t } = useTranslation(lng, "Language");
 
   useEffect(() => {
     if (lng && lng !== language && ["en", "bn"].includes(lng)) {
@@ -59,7 +61,6 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 border-b shadow-sm backdrop-blur-md">
       <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-        c
         <div className="flex items-center justify-between">
           <Link href={`/${lng}/user-dashboard`} className="focus:outline-none">
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-red-500 tracking-tight cursor-pointer">
@@ -69,10 +70,10 @@ export default function Header() {
           {/* DealDetails header actions */}
           {pathname.includes("deal-details") ? (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" title="Share">
+              <Button variant="ghost" size="icon" title={t("share")}>
                 <Share2 className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" title="Save">
+              <Button variant="ghost" size="icon" title={t("save")}>
                 <Heart className="h-5 w-5" />
               </Button>
             </div>
@@ -115,7 +116,7 @@ export default function Header() {
                 <DropdownMenuContent align="end">
                   {!session ? (
                     <DropdownMenuItem onClick={handleLogin}>
-                      Login
+                      {t("login")}
                     </DropdownMenuItem>
                   ) : (
                     <>
@@ -129,13 +130,13 @@ export default function Header() {
                         }}
                         className="hover:bg-red-50"
                       >
-                        Deal Management
+                        {t("dealManagement")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={handleLogout}
                         className="hover:bg-red-50"
                       >
-                        Logout
+                        {t("logout")}
                       </DropdownMenuItem>
                     </>
                   )}

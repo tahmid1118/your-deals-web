@@ -1,13 +1,6 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -31,26 +25,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "@/app/i18n/client";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // Zod schema for form validation
-const dealSchema = z.object({
-  dealTitle: z.string().min(1, "Deal title is required"),
-  dealDetails: z.string().min(1, "Deal details are required"),
-  dealThumbnail: z.any().refine((files) => files?.length > 0, "Deal thumbnail is required"),
-  sourceFacebook: z.string().optional(),
-  sourceWebsite: z.string().optional(),
-  sourceInstagram: z.string().optional(),
-  dealChannel: z.string().min(1, "Select a deal channel"),
-  dealType: z.string().min(1, "Select a deal type"),
-  dealStartDatetime: z.string().min(1, "Start date is required"),
-  dealEndDatetime: z.string().min(1, "End date is required"),
-  branchId: z.number().min(1, "Branch ID is required"),
-  shopId: z.number().min(1, "Shop ID is required"),
-});
-
-type DealFormInputs = z.infer<typeof dealSchema>;
+const createDealSchema = (t: any) =>
+  z.object({
+    dealTitle: z.string().min(1, t("dealTitleIsRequired")),
+    dealDetails: z.string().min(1, t("dealDetailsAreRequired")),
+    dealThumbnail: z
+      .any()
+      .refine((files) => files?.length > 0, t("dealThumbnailIsRequired")),
+    sourceFacebook: z.string().optional(),
+    sourceWebsite: z.string().optional(),
+    sourceInstagram: z.string().optional(),
+    dealChannel: z.string().min(1, t("selectADealChannel")),
+    dealType: z.string().min(1, t("selectADealType")),
+    dealStartDatetime: z.string().min(1, t("startDateIsRequired")),
+    dealEndDatetime: z.string().min(1, t("endDateIsRequired")),
+    branchId: z.number().min(1, t("branchIDIsRequired")),
+    shopId: z.number().min(1, t("shopIDIsRequired")),
+  });
 
 interface CreateDealDialogProps {
   fetchDeals: () => void;
@@ -67,6 +68,9 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
   const pathname = usePathname();
   const lng = pathname.split("/")[1] as "en" | "bn";
   const { t } = useTranslation(lng, "Language");
+
+  const dealSchema = createDealSchema(t);
+  type DealFormInputs = z.infer<typeof dealSchema>;
 
   const form = useForm<DealFormInputs>({
     resolver: zodResolver(dealSchema),
@@ -119,19 +123,19 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
       const result = await response.json();
 
       if (response.ok && result.status === "success") {
-        toast.success(result.message || "Deal created successfully", {
+        toast.success(result.message || t("dealCreatedSuccessfully"), {
           style: { background: "#2E7D32", color: "#fff" },
         });
         form.reset();
         fetchDeals();
         setOpen(false);
       } else {
-        toast.error(result.message || "Creation failed", {
+        toast.error(result.message || t("creationFailed"), {
           style: { background: "#D32F2F", color: "#fff" },
         });
       }
     } catch (error) {
-      toast.error("An error occurred while creating the deal", {
+      toast.error(t("anErrorOccurredWhileCreatingTheDeal"), {
         style: { background: "#D32F2F", color: "#fff" },
       });
     } finally {
@@ -164,10 +168,10 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealTitle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Title</FormLabel>
+                  <FormLabel className="font-bold">{t("dealTitle")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter deal title"
+                      placeholder={t("enterDealTitle")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -183,10 +187,12 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealDetails"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Details</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealDetails")}
+                  </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter deal details"
+                      placeholder={t("enterDealDetails")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -202,7 +208,9 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealThumbnail"
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Thumbnail</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealThumbnail")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -223,10 +231,12 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="sourceFacebook"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Facebook URL</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("facebookURL")}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter Facebook URL"
+                      placeholder={t("enterFacebookURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -242,10 +252,10 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="sourceWebsite"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Website URL</FormLabel>
+                  <FormLabel className="font-bold">{t("websiteURL")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter website URL"
+                      placeholder={t("enterWebsiteURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -261,10 +271,12 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="sourceInstagram"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Instagram URL</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("instagramURL")}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter Instagram URL"
+                      placeholder={t("enterInstagramURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -280,16 +292,20 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealChannel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Channel</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealChannel")}
+                  </FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select channel" />
+                        <SelectValue placeholder={t("selectChannel")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="physical">Physical</SelectItem>
-                        <SelectItem value="both">Both</SelectItem>
+                        <SelectItem value="online">{t("online")}</SelectItem>
+                        <SelectItem value="physical">
+                          {t("physical")}
+                        </SelectItem>
+                        <SelectItem value="both">{t("both")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -304,17 +320,21 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Type</FormLabel>
+                  <FormLabel className="font-bold">{t("dealType")}</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue placeholder={t("selectType")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="seasonal">Seasonal</SelectItem>
-                        <SelectItem value="promotional">Promotional</SelectItem>
-                        <SelectItem value="flash">Flash</SelectItem>
-                        <SelectItem value="weekend">Weekend</SelectItem>
+                        <SelectItem value="seasonal">
+                          {t("seasonal")}
+                        </SelectItem>
+                        <SelectItem value="promotional">
+                          {t("promotional")}
+                        </SelectItem>
+                        <SelectItem value="flash">{t("flash")}</SelectItem>
+                        <SelectItem value="weekend">{t("weekend")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -329,7 +349,7 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealStartDatetime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Start Date</FormLabel>
+                  <FormLabel className="font-bold">{t("startDate")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
@@ -348,7 +368,7 @@ const CreateDealDialog: React.FC<CreateDealDialogProps> = ({
               name="dealEndDatetime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">End Date</FormLabel>
+                  <FormLabel className="font-bold">{t("endDate")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"

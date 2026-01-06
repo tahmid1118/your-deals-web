@@ -179,7 +179,7 @@ function UserDashboardComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
+    <div className="min-h-screen bg-linear-to-br from-red-50 to-white">
       {/* Search Bar */}
       <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8">
@@ -381,7 +381,7 @@ function UserDashboardComponent() {
               variant="outline"
               disabled={currentPage === 0}
               onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-              className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9"
+              className="min-w-17.5 sm:min-w-25 text-xs sm:text-sm h-8 sm:h-9"
             >
               {t("previous")}
             </Button>
@@ -418,7 +418,7 @@ function UserDashboardComponent() {
                   Math.min(pagination.totalPages - 1, prev + 1)
                 )
               }
-              className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9"
+              className="min-w-17.5 sm:min-w-25 text-xs sm:text-sm h-8 sm:h-9"
             >
               {t("next")}
             </Button>

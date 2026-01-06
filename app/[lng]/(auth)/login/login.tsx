@@ -65,11 +65,6 @@ export default function LoginPage() {
         toast.error(result.error, {
           style: { background: "#D32F2F", color: "#fff" },
         });
-      } else {
-        toast.success("Logged in!", {
-          style: { background: "#2E7D32", color: "#fff" },
-        });
-        router.push(`/${detectedLng}/user-dashboard`);
       }
     } catch (error) {
       toast.error("Login failed", {
@@ -81,8 +76,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-red-50 to-white overflow-hidden">
-      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden min-h-[500px] md:min-h-[600px] items-stretch">
+    <div className="fixed inset-0 flex items-center justify-center bg-linear-to-br from-red-50 to-white overflow-hidden">
+      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden min-h-125 md:min-h-150 items-stretch">
         {/* Left Panel - Form */}
         <div className="w-full md:w-1/2 flex flex-col justify-center bg-white/80 p-10 order-1 md:order-1 h-full">
           <h2 className="text-3xl font-bold mb-2">{t("welcome_back")}</h2>
@@ -197,7 +192,7 @@ export default function LoginPage() {
         </div>
 
         {/* Right Panel (Image) */}
-        <div className="w-full md:w-1/2 min-h-[300px] md:min-h-[600px] bg-gradient-to-br from-red-100 to-red-300 relative flex items-center justify-center order-2 md:order-2">
+        <div className="w-full md:w-1/2 min-h-75 md:min-h-150 bg-linear-to-br from-red-100 to-red-300 relative flex items-center justify-center order-2 md:order-2">
           <Image
             src={bg3}
             alt="Background Graphic"

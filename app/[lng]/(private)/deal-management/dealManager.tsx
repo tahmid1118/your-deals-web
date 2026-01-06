@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { DataTable } from "@/components/ui/myTable";
+import { useTranslation } from "@/app/i18n/client";
+import CreateDealDialog from "@/components/dialogs/createDealDialog";
+import DeleteDealDialog from "@/components/dialogs/deleteDealDialog";
+import UpdateDealDialog from "@/components/dialogs/updateDealDialog";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import UpdateDealDialog from "@/components/dialogs/updateDealDialog";
-import DeleteDealDialog from "@/components/dialogs/deleteDealDialog";
-import CreateDealDialog from "@/components/dialogs/createDealDialog";
+import { DataTable } from "@/components/ui/myTable";
+import { MoreHorizontal } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useTranslation } from "@/app/i18n/client";
-
-
+import { useEffect, useState } from "react";
 
 interface Deal {
   deal_id: number;
@@ -58,19 +56,22 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
   const fetchDeals = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deal/table-data`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lg: "en",
-          paginationData: {
-            itemsPerPage: 12,
-            currentPageNumber: currentPage,
-            sortOrder: "asc",
-            filterBy: "",
-          },
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/deal/table-data`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lg: "en",
+            paginationData: {
+              itemsPerPage: 12,
+              currentPageNumber: currentPage,
+              sortOrder: "asc",
+              filterBy: "",
+            },
+          }),
+        }
+      );
       const data = await res.json();
       setDeals(data.data.deals || []);
       setPagination(data.data.pagination || null);
@@ -123,12 +124,12 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
     },
     {
       accessorKey: "shop_name",
-      header: "Shop",
+      header: t("shop"),
       cell: (info: any) => info.getValue(),
     },
     {
       accessorKey: "branch_name",
-      header: "Branch",
+      header: t("branch"),
       cell: (info: any) => info.getValue(),
     },
     {
@@ -147,8 +148,17 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
             <DropdownMenuContent align="end" className="w-fit">
               <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <UpdateDealDialog dealDetails={tableData} fetchDeals={fetchDeals} accessToken={accessToken} />
-              <DeleteDealDialog dealId={tableData.deal_id} dealTitle={tableData.deal_title} fetchDeals={fetchDeals} accessToken={accessToken} />
+              <UpdateDealDialog
+                dealDetails={tableData}
+                fetchDeals={fetchDeals}
+                accessToken={accessToken}
+              />
+              <DeleteDealDialog
+                dealId={tableData.deal_id}
+                dealTitle={tableData.deal_title}
+                fetchDeals={fetchDeals}
+                accessToken={accessToken}
+              />
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -160,14 +170,19 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
     <div className="h-screen overflow-y-auto bg-gradient-to-br from-red-50 to-white">
       <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
         <h1 className="text-2xl font-bold mb-4">{t("dealManagement")}</h1>
-        <DataTable 
-          data={deals} 
-          columns={columns} 
+        <DataTable
+          data={deals}
+          columns={columns}
           searchableKey="deal_title"
-          toolbarContent={<CreateDealDialog fetchDeals={fetchDeals} accessToken={accessToken} />}
+          toolbarContent={
+            <CreateDealDialog
+              fetchDeals={fetchDeals}
+              accessToken={accessToken}
+            />
+          }
         />
         {loading && <div className="mt-2">{t("loading")}</div>}
-      
+
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
           <div className="flex items-center justify-center gap-1 sm:gap-2 mt-6 flex-wrap px-2 flex-shrink-0">
@@ -180,27 +195,38 @@ export default function DealManager({ accessToken }: { accessToken: string }) {
               {t("previous")}
             </Button>
             <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
-              {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, i) => {
-                const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
-                if (pageIndex >= pagination.totalPages) return null;
-                return (
-                  <Button
-                    key={pageIndex}
-                    variant={currentPage === pageIndex ? "default" : "outline"}
-                    onClick={() => setCurrentPage(pageIndex)}
-                    className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
-                      currentPage === pageIndex ? "bg-red-500 hover:bg-red-600" : "bg-red-100 hover:bg-red-200"
-                    }`}
-                  >
-                    {pageIndex + 1}
-                  </Button>
-                );
-              })}
+              {Array.from(
+                { length: Math.min(pagination.totalPages, 5) },
+                (_, i) => {
+                  const pageIndex = currentPage < 3 ? i : currentPage - 2 + i;
+                  if (pageIndex >= pagination.totalPages) return null;
+                  return (
+                    <Button
+                      key={pageIndex}
+                      variant={
+                        currentPage === pageIndex ? "default" : "outline"
+                      }
+                      onClick={() => setCurrentPage(pageIndex)}
+                      className={`h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm ${
+                        currentPage === pageIndex
+                          ? "bg-red-500 hover:bg-red-600"
+                          : "bg-red-100 hover:bg-red-200"
+                      }`}
+                    >
+                      {pageIndex + 1}
+                    </Button>
+                  );
+                }
+              )}
             </div>
             <Button
               variant="outline"
               disabled={currentPage === pagination.totalPages - 1}
-              onClick={() => setCurrentPage((prev) => Math.min(pagination.totalPages - 1, prev + 1))}
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(pagination.totalPages - 1, prev + 1)
+                )
+              }
               className="min-w-[70px] sm:min-w-[100px] text-xs sm:text-sm h-8 sm:h-9 bg-red-100 hover:bg-red-200"
             >
               {t("next")}
