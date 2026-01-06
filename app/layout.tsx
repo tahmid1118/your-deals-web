@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import CookiesProviderWrapper from "../components/CookiesProviderWrapper";
 import Header from "@/components/header";
 import NextAuthSessionProvider from "@/components/NextAuthSessionProvider";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import CookiesProviderWrapper from "../components/CookiesProviderWrapper";
+import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,12 +35,12 @@ export default function RootLayout({
           <CookiesProviderWrapper>
             <Header />
             {children}
-              <Toaster
-          richColors
-          visibleToasts={3}
-          position="bottom-right"
-          closeButton={true}
-        />
+            <Toaster
+              richColors
+              visibleToasts={3}
+              position="bottom-right"
+              closeButton={true}
+            />
           </CookiesProviderWrapper>
         </NextAuthSessionProvider>
       </body>

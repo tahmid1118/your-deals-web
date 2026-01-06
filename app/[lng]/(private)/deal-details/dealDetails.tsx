@@ -1,13 +1,11 @@
 "use client";
 import { useTranslation } from "@/app/i18n/client";
-import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import * as CryptoJS from "crypto-js";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MapPin, Share2, Star, Facebook, Globe, Instagram } from "lucide-react";
+import * as CryptoJS from "crypto-js";
+import { Facebook, Globe, Heart, Instagram, MapPin, Star } from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface DealDetails {
   deal_id: number;
@@ -104,11 +102,14 @@ export default function DealDetailsComponent() {
   const fetchDealDetails = async (dealId: number) => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deal/details`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ dealId, lg: "en" }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/deal/details`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dealId, lg: "en" }),
+        }
+      );
       const data = await response.json();
       if (data.status === "success") {
         setDeal(data.data);
@@ -124,7 +125,11 @@ export default function DealDetailsComponent() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   if (loading) {
@@ -158,32 +163,59 @@ export default function DealDetailsComponent() {
                 height={600}
                 className={
                   `object-contain w-full h-auto block bg-white rounded-xl max-h-[500px] ` +
-                  (isPortrait ? 'max-w-[350px] md:max-w-[400px]' : 'max-w-full')
+                  (isPortrait ? "max-w-[350px] md:max-w-[400px]" : "max-w-full")
                 }
-                style={{ aspectRatio: 'auto' }}
+                style={{ aspectRatio: "auto" }}
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 priority
-                onLoad={e => {
+                onLoad={(e) => {
                   const img = e.currentTarget;
                   setIsPortrait(img.naturalHeight > img.naturalWidth);
                 }}
               />
             </div>
             <div className="flex flex-wrap gap-2 items-center mt-2">
-              <Badge className="bg-red-500 text-white capitalize text-xs px-2 py-1">{deal.deal_type}</Badge>
-              <span className="flex items-center gap-1 text-xs text-gray-600"><Star className="h-4 w-4 text-yellow-400" /> {deal.rating ?? 0} ratings</span>
-              <span className="flex items-center gap-1 text-xs text-gray-600"><MapPin className="h-4 w-4" /> {deal.branch_location}</span>
-              <span className="flex items-center gap-1 text-xs text-gray-600">{deal.deal_channel === 'both' ? '🌐 Both' : deal.deal_channel === 'online' ? '💻 Online' : '🏬 Physical'}</span>
+              <Badge className="bg-red-500 text-white capitalize text-xs px-2 py-1">
+                {deal.deal_type}
+              </Badge>
+              <span className="flex items-center gap-1 text-xs text-gray-600">
+                <Star className="h-4 w-4 text-yellow-400" /> {deal.rating ?? 0}{" "}
+                ratings
+              </span>
+              <span className="flex items-center gap-1 text-xs text-gray-600">
+                <MapPin className="h-4 w-4" /> {deal.branch_location}
+              </span>
+              <span className="flex items-center gap-1 text-xs text-gray-600">
+                {deal.deal_channel === "both"
+                  ? "🌐 Both"
+                  : deal.deal_channel === "online"
+                    ? "💻 Online"
+                    : "🏬 Physical"}
+              </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-1 text-gray-900">{deal.deal_title}</h2>
-            <div className="text-gray-700 text-base sm:text-lg mb-2 whitespace-pre-line">{deal.deal_details}</div>
+            <h2 className="text-2xl sm:text-3xl font-bold mt-2 mb-1 text-gray-900">
+              {deal.deal_title}
+            </h2>
+            <div className="text-gray-700 text-base sm:text-lg mb-2 whitespace-pre-line">
+              {deal.deal_details}
+            </div>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
               <span>Start: {formatDate(deal.deal_start_datetime)}</span>
               <span>End: {formatDate(deal.deal_end_datetime)}</span>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
-              <span>Shop: <span className="font-semibold text-gray-700">{deal.shop_name}</span></span>
-              <span>Branch: <span className="font-semibold text-gray-700">{deal.branch_name}</span></span>
+              <span>
+                Shop:{" "}
+                <span className="font-semibold text-gray-700">
+                  {deal.shop_name}
+                </span>
+              </span>
+              <span>
+                Branch:{" "}
+                <span className="font-semibold text-gray-700">
+                  {deal.branch_name}
+                </span>
+              </span>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
               <span>Address: {deal.branch_address}</span>
@@ -191,17 +223,35 @@ export default function DealDetailsComponent() {
             </div>
             <div className="flex flex-wrap gap-3 items-center text-gray-500 mb-2">
               {deal.source_facebook && (
-                <a href={`https://${deal.source_facebook}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors" title="Facebook">
+                <a
+                  href={`https://${deal.source_facebook}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-600 transition-colors"
+                  title="Facebook"
+                >
                   <Facebook className="h-5 w-5" />
                 </a>
               )}
               {deal.source_website && (
-                <a href={`https://${deal.source_website}`} target="_blank" rel="noopener noreferrer" className="hover:text-green-600 transition-colors" title="Website">
+                <a
+                  href={`https://${deal.source_website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-green-600 transition-colors"
+                  title="Website"
+                >
                   <Globe className="h-5 w-5" />
                 </a>
               )}
               {deal.source_instagram && (
-                <a href={`https://${deal.source_instagram}`} target="_blank" rel="noopener noreferrer" className="hover:text-pink-500 transition-colors" title="Instagram">
+                <a
+                  href={`https://${deal.source_instagram}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-pink-500 transition-colors"
+                  title="Instagram"
+                >
                   <Instagram className="h-5 w-5" />
                 </a>
               )}
@@ -221,12 +271,18 @@ export default function DealDetailsComponent() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {topDeals.map((d) => (
                 <div
-                  key={d.deal_id + '-' + d.branch_id}
+                  key={d.deal_id + "-" + d.branch_id}
                   className="group cursor-pointer border rounded-xl bg-white shadow hover:shadow-lg transition-shadow overflow-hidden"
                   onClick={() => {
-                    const secretKey = process.env.SECRET_KEY || "default_secret_key";
-                    const encodedId = CryptoJS.AES.encrypt(d.deal_id.toString(), secretKey).toString();
-                    router.push(`/${lng}/deal-details?id=${encodeURIComponent(encodedId)}`);
+                    const secretKey =
+                      process.env.SECRET_KEY || "default_secret_key";
+                    const encodedId = CryptoJS.AES.encrypt(
+                      d.deal_id.toString(),
+                      secretKey
+                    ).toString();
+                    router.push(
+                      `/${lng}/deal-details?id=${encodeURIComponent(encodedId)}`
+                    );
                   }}
                 >
                   <div className="relative aspect-[4/3] w-full bg-gray-100">
@@ -240,19 +296,29 @@ export default function DealDetailsComponent() {
                   </div>
                   <div className="p-3 space-y-1">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-sm line-clamp-1">{d.shop_name}</h4>
+                      <h4 className="font-semibold text-sm line-clamp-1">
+                        {d.shop_name}
+                      </h4>
                       <span className="flex items-center gap-1 text-xs text-gray-500">
                         <Heart className="h-3 w-3 text-red-500" />
                         {d.rating ? Math.floor(Number(d.rating)) : 0}
                       </span>
                     </div>
-                    <div className="text-xs text-gray-600 line-clamp-2">{d.deal_title}</div>
+                    <div className="text-xs text-gray-600 line-clamp-2">
+                      {d.deal_title}
+                    </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <MapPin className="h-3 w-3" />
                       <span>{d.branch_name}</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <span>{d.deal_channel === 'both' ? '🌐 Both' : d.deal_channel === 'online' ? '💻 Online' : '🏬 Physical'}</span>
+                      <span>
+                        {d.deal_channel === "both"
+                          ? "🌐 Both"
+                          : d.deal_channel === "online"
+                            ? "💻 Online"
+                            : "🏬 Physical"}
+                      </span>
                       <span>{d.deal_type}</span>
                     </div>
                   </div>

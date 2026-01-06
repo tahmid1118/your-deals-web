@@ -1,13 +1,6 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useTranslation } from "@/app/i18n/client";
 import {
   Form,
   FormControl,
@@ -25,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -32,25 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Pencil } from "lucide-react";
 import { usePathname } from "next/navigation";
-
-// Zod schema for form validation
-const dealSchema = z.object({
-  dealTitle: z.string().min(1, "Deal title is required"),
-  dealDetails: z.string().min(1, "Deal details are required"),
-  dealThumbnail: z.any().optional(),
-  sourceFacebook: z.string().optional(),
-  sourceWebsite: z.string().optional(),
-  sourceInstagram: z.string().optional(),
-  dealChannel: z.string().min(1, "Select a deal channel"),
-  dealType: z.string().min(1, "Select a deal type"),
-  dealStartDatetime: z.string().min(1, "Start date is required"),
-  dealEndDatetime: z.string().min(1, "End date is required"),
-  branchId: z.number().min(1, "Branch ID is required"),
-  shopId: z.number().min(1, "Shop ID is required"),
-});
-
-type DealFormInputs = z.infer<typeof dealSchema>;
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 interface UpdateDealDialogProps {
   dealDetails: {
@@ -72,6 +54,23 @@ interface UpdateDealDialogProps {
   accessToken: string;
 }
 
+// Zod schema for form validation
+const createUpdateDealSchema = (t: any) =>
+  z.object({
+    dealTitle: z.string().min(1, t("dealTitleIsRequired")),
+    dealDetails: z.string().min(1, t("dealDetailsAreRequired")),
+    dealThumbnail: z.any().optional(),
+    sourceFacebook: z.string().optional(),
+    sourceWebsite: z.string().optional(),
+    sourceInstagram: z.string().optional(),
+    dealChannel: z.string().min(1, t("selectADealChannel")),
+    dealType: z.string().min(1, t("selectADealType")),
+    dealStartDatetime: z.string().min(1, t("startDateIsRequired")),
+    dealEndDatetime: z.string().min(1, t("endDateIsRequired")),
+    branchId: z.number().min(1, t("branchIDIsRequired")),
+    shopId: z.number().min(1, t("shopIDIsRequired")),
+  });
+
 const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
   dealDetails,
   fetchDeals,
@@ -83,6 +82,9 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
   const pathname = usePathname();
   const lng = pathname.split("/")[1] as "en" | "bn";
   const { t } = useTranslation(lng, "Language");
+
+  const dealSchema = createUpdateDealSchema(t);
+  type DealFormInputs = z.infer<typeof dealSchema>;
 
   const form = useForm<DealFormInputs>({
     resolver: zodResolver(dealSchema),
@@ -155,18 +157,18 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
       const result = await response.json();
 
       if (response.ok && result.status === "success") {
-        toast.success(result.message || "Deal updated successfully", {
+        toast.success(result.message || t("dealUpdatedSuccessfully"), {
           style: { background: "#2E7D32", color: "#fff" },
         });
         fetchDeals();
         setOpen(false);
       } else {
-        toast.error(result.message || "Update failed", {
+        toast.error(result.message || t("updateFailed"), {
           style: { background: "#D32F2F", color: "#fff" },
         });
       }
     } catch (error) {
-      toast.error("An error occurred", {
+      toast.error(t("anErrorOccurred"), {
         style: { background: "#D32F2F", color: "#fff" },
       });
     } finally {
@@ -177,7 +179,10 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start hover:bg-red-50">
+        <Button
+          variant="ghost"
+          className="w-full justify-start hover:bg-red-50"
+        >
           <Pencil className="w-4 h-4 mr-2" />
           {t("updateDeal")}
         </Button>
@@ -186,9 +191,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
       <DialogContent className="max-h-[80vh] overflow-y-auto border-none shadow-none bg-red-50">
         <DialogHeader>
           <DialogTitle>{t("updateDeal")}</DialogTitle>
-          <DialogDescription>
-            {t("modifyDealDetailsBelow")}
-          </DialogDescription>
+          <DialogDescription>{t("modifyDealDetailsBelow")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -218,7 +221,9 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealDetails"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">{t("dealDetails")}</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealDetails")}
+                  </FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder={t("enterDealDetails")}
@@ -237,7 +242,9 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealThumbnail"
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">{t("dealThumbnail")}</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealThumbnail")}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="file"
@@ -258,10 +265,12 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="sourceFacebook"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Facebook URL</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("facebookURL")}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter Facebook URL"
+                      placeholder={t("enterFacebookURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -277,10 +286,10 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="sourceWebsite"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Website URL</FormLabel>
+                  <FormLabel className="font-bold">{t("websiteURL")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter website URL"
+                      placeholder={t("enterWebsiteURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -296,10 +305,12 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="sourceInstagram"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Instagram URL</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("instagramURL")}
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter Instagram URL"
+                      placeholder={t("enterInstagramURL")}
                       {...field}
                       className="bg-white p-3 rounded-lg"
                     />
@@ -315,16 +326,20 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealChannel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Channel</FormLabel>
+                  <FormLabel className="font-bold">
+                    {t("dealChannel")}
+                  </FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select channel" />
+                        <SelectValue placeholder={t("selectChannel")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="physical">Physical</SelectItem>
-                        <SelectItem value="both">Both</SelectItem>
+                        <SelectItem value="online">{t("online")}</SelectItem>
+                        <SelectItem value="physical">
+                          {t("physical")}
+                        </SelectItem>
+                        <SelectItem value="both">{t("both")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -339,17 +354,21 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Deal Type</FormLabel>
+                  <FormLabel className="font-bold">{t("dealType")}</FormLabel>
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue placeholder={t("selectType")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="seasonal">Seasonal</SelectItem>
-                        <SelectItem value="promotional">Promotional</SelectItem>
-                        <SelectItem value="flash">Flash</SelectItem>
-                        <SelectItem value="weekend">Weekend</SelectItem>
+                        <SelectItem value="seasonal">
+                          {t("seasonal")}
+                        </SelectItem>
+                        <SelectItem value="promotional">
+                          {t("promotional")}
+                        </SelectItem>
+                        <SelectItem value="flash">{t("flash")}</SelectItem>
+                        <SelectItem value="weekend">{t("weekend")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -364,7 +383,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealStartDatetime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">Start Date</FormLabel>
+                  <FormLabel className="font-bold">{t("startDate")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"
@@ -383,7 +402,7 @@ const UpdateDealDialog: React.FC<UpdateDealDialogProps> = ({
               name="dealEndDatetime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="font-bold">End Date</FormLabel>
+                  <FormLabel className="font-bold">{t("endDate")}</FormLabel>
                   <FormControl>
                     <Input
                       type="date"

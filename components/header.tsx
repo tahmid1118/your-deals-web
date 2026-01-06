@@ -79,28 +79,32 @@ export default function Header() {
             </div>
           ) : (
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
-              {/* Language Selector */}
-              <div className="flex items-center bg-red-50 rounded-full px-2 py-1 shadow-sm gap-1">
-                <button
-                  onClick={() => handleLanguageChange("en")}
-                  className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
-                    language === "en"
-                      ? "bg-red-500 text-white"
-                      : "text-gray-700 hover:bg-red-100"
-                  }`}
+              {/* Language Selector Slider */}
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs sm:text-sm font-semibold transition-colors ${language === "en" ? "text-red-500" : "text-gray-500"}`}
                 >
                   EN
-                </button>
+                </span>
                 <button
-                  onClick={() => handleLanguageChange("bn")}
-                  className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold transition-colors ${
-                    language === "bn"
-                      ? "bg-red-500 text-white"
-                      : "text-gray-700 hover:bg-red-100"
-                  }`}
+                  onClick={() =>
+                    handleLanguageChange(language === "en" ? "bn" : "en")
+                  }
+                  className="relative inline-flex h-6 w-11 items-center rounded-full bg-red-100 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  role="switch"
+                  aria-checked={language === "bn"}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-red-500 transition-transform ${
+                      language === "bn" ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+                <span
+                  className={`text-xs sm:text-sm font-semibold transition-colors ${language === "bn" ? "text-red-500" : "text-gray-500"}`}
                 >
                   BN
-                </button>
+                </span>
               </div>
 
               <DropdownMenu>

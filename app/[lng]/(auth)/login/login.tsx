@@ -65,6 +65,11 @@ export default function LoginPage() {
         toast.error(result.error, {
           style: { background: "#D32F2F", color: "#fff" },
         });
+      } else {
+        toast.success("Logged in!", {
+          style: { background: "#2E7D32", color: "#fff" },
+        });
+        router.push(`/${detectedLng}/user-dashboard`);
       }
     } catch (error) {
       toast.error("Login failed", {

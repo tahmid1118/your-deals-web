@@ -172,7 +172,7 @@ function UserDashboardComponent() {
 
   if (loading && deals.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-red-50 to-white flex items-center justify-center">
         <div className="text-xl">{t("loadingDeals")}</div>
       </div>
     );
