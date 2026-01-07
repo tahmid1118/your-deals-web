@@ -3,7 +3,7 @@ import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import * as CryptoJS from "crypto-js";
-import { Heart, MapPin, Search } from "lucide-react";
+import { Heart, MapPin } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -101,7 +101,39 @@ function UserDashboardComponent() {
     fetchDeals(currentPage);
   }, [currentPage]);
 
+  const canRateDeal = (dealId: number): boolean => {
+    const cookieName = `deal_rating_${dealId}`;
+    const cookies = document.cookie.split("; ");
+    const ratingCookie = cookies.find((row) =>
+      row.startsWith(`${cookieName}=`)
+    );
+
+    if (!ratingCookie) {
+      return true; // No cookie found, user can rate
+    }
+
+    const timestamp = parseInt(ratingCookie.split("=")[1]);
+    const now = Date.now();
+    const twelveHours = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
+    return now - timestamp >= twelveHours;
+  };
+
+  const setRatingCookie = (dealId: number) => {
+    const cookieName = `deal_rating_${dealId}`;
+    const timestamp = Date.now();
+    const twelveHours = 12 * 60 * 60 * 1000;
+    const expiryDate = new Date(Date.now() + twelveHours);
+
+    document.cookie = `${cookieName}=${timestamp}; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+  };
+
   const handleRating = async (dealId: number) => {
+    // Check if user can rate this deal
+    if (!canRateDeal(dealId)) {
+      return;
+    }
+
     // Find the current deal and its rating from the latest state
     const deal = deals.find((d) => d.deal_id === dealId);
     // Always treat rating as integer for calculation
@@ -121,14 +153,21 @@ function UserDashboardComponent() {
       });
     });
 
+    // Set cookie to track this rating
+    setRatingCookie(dealId);
+
     // Send API call in background
     try {
-      const formData = new FormData();
-      formData.append("dealId", dealId.toString());
-      formData.append("rating", newRating.toString());
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deal/update`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/deal/update-rating`, {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lg: lng,
+          dealId: dealId,
+          rating: newRating,
+        }),
       });
     } catch (error) {
       console.error("Error updating rating:", error);
@@ -172,8 +211,47 @@ function UserDashboardComponent() {
 
   if (loading && deals.length === 0) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-red-50 to-white flex items-center justify-center">
-        <div className="text-xl">{t("loadingDeals")}</div>
+      <div className="min-h-screen bg-linear-to-br from-red-50 to-white">
+        {/* Search Bar Skeleton */}
+        {/* <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
+          <div className="container mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-center max-w-4xl mx-auto">
+              <div className="w-full h-16 bg-gray-200 animate-pulse rounded-2xl sm:rounded-full"></div>
+            </div>
+          </div>
+        </div> */}
+
+        {/* Main Content Skeleton */}
+        <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+          {/* Section Header Skeleton */}
+          <div className="mb-4 sm:mb-6">
+            <div className="h-6 sm:h-8 bg-gray-200 animate-pulse rounded w-64"></div>
+          </div>
+
+          {/* Deals Grid Skeleton */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+            {Array.from({ length: 10 }).map((_, index) => (
+              <div key={index} className="group">
+                <div className="space-y-2 sm:space-y-3">
+                  {/* Image Skeleton */}
+                  <div className="relative aspect-square rounded-lg sm:rounded-xl overflow-hidden bg-gray-200 animate-pulse"></div>
+
+                  {/* Content Skeleton */}
+                  <div className="space-y-1 sm:space-y-2 px-1.5 sm:px-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 animate-pulse rounded w-8"></div>
+                    </div>
+                    <div className="h-3 bg-gray-200 animate-pulse rounded w-1/2"></div>
+                    <div className="h-3 bg-gray-200 animate-pulse rounded w-full"></div>
+                    <div className="h-3 bg-gray-200 animate-pulse rounded w-2/3"></div>
+                    <div className="h-3 bg-gray-200 animate-pulse rounded w-3/4"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }
@@ -181,7 +259,7 @@ function UserDashboardComponent() {
   return (
     <div className="min-h-screen bg-linear-to-br from-red-50 to-white">
       {/* Search Bar */}
-      <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
+      {/* <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center max-w-4xl mx-auto">
             <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 border rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-6 py-2 sm:py-3 shadow-md hover:shadow-lg transition-shadow">
@@ -226,7 +304,7 @@ function UserDashboardComponent() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
@@ -279,6 +357,7 @@ function UserDashboardComponent() {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       handleRating(deal.deal_id);
                       // Animation: add a class for a short pulse
                       const btn = e.currentTarget;
