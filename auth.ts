@@ -54,7 +54,10 @@ const credentialsConfig = CredentialsProvider({
     } catch (error: unknown) {
       console.error("[NextAuth][authorize] Login error:", error);
       if (axios.isAxiosError(error) && error.response) {
-        console.error("[NextAuth][authorize] Error response data:", error.response.data);
+        console.error(
+          "[NextAuth][authorize] Error response data:",
+          error.response.data
+        );
       }
       return null;
     }
@@ -106,13 +109,34 @@ const config = {
           }
         } catch (error) {
           // Optionally log error, but don't break session
-          console.error("[NextAuth][session] Error fetching personal-data:", error);
+          console.error(
+            "[NextAuth][session] Error fetching personal-data:",
+            error
+          );
         }
       }
       return session;
     },
   },
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 hours (adjust as needed)
+  },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60, // 24 hours
+      },
+    },
+  },
+  pages: {
+    signIn: "/en/login", // Redirect to login page when session expires
+  },
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

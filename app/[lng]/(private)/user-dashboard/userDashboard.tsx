@@ -3,7 +3,7 @@ import { useTranslation } from "@/app/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import * as CryptoJS from "crypto-js";
-import { Heart, MapPin } from "lucide-react";
+import { Heart, MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -213,13 +213,13 @@ function UserDashboardComponent() {
     return (
       <div className="min-h-screen bg-linear-to-br from-red-50 to-white">
         {/* Search Bar Skeleton */}
-        {/* <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
+        <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
           <div className="container mx-auto px-3 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center max-w-4xl mx-auto">
               <div className="w-full h-16 bg-gray-200 animate-pulse rounded-2xl sm:rounded-full"></div>
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* Main Content Skeleton */}
         <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
@@ -259,7 +259,7 @@ function UserDashboardComponent() {
   return (
     <div className="min-h-screen bg-linear-to-br from-red-50 to-white">
       {/* Search Bar */}
-      {/* <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
+      <div className="bg-white py-3 sm:py-4 md:py-6 border-b">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center max-w-4xl mx-auto">
             <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 border rounded-2xl sm:rounded-full px-3 sm:px-4 md:px-6 py-2 sm:py-3 shadow-md hover:shadow-lg transition-shadow">
@@ -304,7 +304,7 @@ function UserDashboardComponent() {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">

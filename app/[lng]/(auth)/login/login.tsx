@@ -89,7 +89,11 @@ export default function LoginPage() {
           <p className="text-gray-500 mb-8">{t("login_subtitle")}</p>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6"
+              autoComplete="off"
+            >
               {/* Email */}
               <FormField
                 control={form.control}
@@ -103,6 +107,7 @@ export default function LoginPage() {
                       <Input
                         {...field}
                         type="email"
+                        autoComplete="off"
                         placeholder={t("placeholders.enter_email")}
                         className={`bg-red-50 text-base text-gray-800 px-4 py-2 rounded-full pr-4 border mt-2 focus:bg-red-50 ${
                           form.formState.errors.email
@@ -130,6 +135,7 @@ export default function LoginPage() {
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
+                          autoComplete="new-password"
                           placeholder={t("placeholders.password_hint")}
                           className={`bg-red-50 text-base text-gray-800 px-4 py-2 rounded-full pr-10 border mt-2 focus:bg-red-50 ${
                             form.formState.errors.password
